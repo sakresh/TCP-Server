@@ -1,4 +1,5 @@
 use std::io::{Read, Write};
+use std::thread::spawn;
 use std::net::{TcpListener, TcpStream};
 
 fn handle_client(mut stream: TcpStream){
@@ -13,9 +14,14 @@ fn handle_client(mut stream: TcpStream){
 fn main(){
     let listener = TcpListener::bind("127.0.0.1:8080").expect("Failed to bind to the address");
     println!("Server listening on 127.0.0.1");
-    // for stream in listener.incoming(){
-    //     match stream){
-    //
-    //     }
-    // }
+    for stream in listener.incoming(){
+        match stream{
+            Ok(stream) => {
+                spawn( || handle_client(stream));
+            }
+            Err(e) => {
+                eprintln!("Failed to establish connection :{}", e);
+            }
+        }
+    }
 }
